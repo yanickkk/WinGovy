@@ -125,25 +125,41 @@
               <span class="text-xs text-slate-400 font-normal">샘플 사용 또는 직접 등록</span>
             </h3>
 
-            <!-- Sample Presets: 60대 일반식(된장찌개)으로 변경 -->
-            <div class="grid grid-cols-3 gap-2 mb-4">
-              <button onclick="selectSampleMeal('korean')" class="meal-preset group border border-slate-700 hover:border-blue-500 p-2 rounded-xl text-left bg-slate-950 transition-all">
-                <div class="text-[11px] font-semibold text-slate-300 group-hover:text-blue-400">된장찌개정식 (60대)</div>
-                <div class="text-[10px] text-emerald-400 font-mono">일반 한식</div>
-              </button>
-              <button onclick="selectSampleMeal('burger')" class="meal-preset group border border-slate-700 hover:border-amber-500 p-2 rounded-xl text-left bg-slate-950 transition-all">
-                <div class="text-[11px] font-semibold text-slate-300 group-hover:text-amber-400">치즈 버거 세트</div>
-                <div class="text-[10px] text-rose-400 font-mono">고지방 위험</div>
-              </button>
-              <button onclick="selectSampleMeal('porridge')" class="meal-preset group border border-slate-700 hover:border-indigo-500 p-2 rounded-xl text-left bg-slate-950 transition-all">
-                <div class="text-[11px] font-semibold text-slate-300 group-hover:text-indigo-400">전복죽 / 소프트</div>
-                <div class="text-[10px] text-cyan-400 font-mono">소화 용이</div>
-              </button>
+            <!-- 예제식단 선택 -->
+            <div class="mb-4">
+              <label class="block text-xs font-semibold text-slate-400 mb-1.5">
+                <i class="fa-solid fa-list-check text-blue-400 mr-1"></i>예제식단 선택
+              </label>
+              <div class="grid grid-cols-3 gap-2">
+                <button onclick="selectSampleMeal('korean')" class="meal-preset group border border-slate-700 hover:border-blue-500 p-2.5 rounded-xl text-left bg-slate-950 transition-all flex flex-col justify-between">
+                  <div>
+                    <div class="text-[11px] font-bold text-slate-200 group-hover:text-blue-400">한식 정식</div>
+                    <div class="text-[10px] text-slate-400 mt-0.5">된장찌개 & 잡곡밥</div>
+                  </div>
+                  <span class="mt-2 text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 w-fit font-mono">균형식</span>
+                </button>
+                <button onclick="selectSampleMeal('salad')" class="meal-preset group border border-slate-700 hover:border-emerald-500 p-2.5 rounded-xl text-left bg-slate-950 transition-all flex flex-col justify-between">
+                  <div>
+                    <div class="text-[11px] font-bold text-slate-200 group-hover:text-emerald-400">2인 한식</div>
+                    <div class="text-[10px] text-slate-400 mt-0.5"> 국과 밥/3찬 </div>
+                  </div>
+                  <span class="mt-2 text-[9px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 w-fit font-mono">고단백</span>
+                </button>
+                <button onclick="selectSampleMeal('burger')" class="meal-preset group border border-slate-700 hover:border-rose-500 p-2.5 rounded-xl text-left bg-slate-950 transition-all flex flex-col justify-between">
+                  <div>
+                    <div class="text-[11px] font-bold text-slate-200 group-hover:text-rose-400">1인 한식</div>
+                    <div class="text-[10px] text-slate-400 mt-0.5">찌개/밥</div>
+                  </div>
+                  <span class="mt-2 text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 w-fit font-mono">위험</span>
+                </button>
+              </div>
             </div>
 
-            <!-- Upload Box (직관적인 버튼 강조 디자인으로 개선) -->
-            <div id="image-drop-area" class="relative border-2 border-dashed border-blue-500/50 hover:border-blue-400 rounded-xl p-5 text-center cursor-pointer transition-all bg-slate-950/80 flex flex-col items-center justify-center min-h-[220px] group">
+            <!-- Upload Box -->
+            <div id="image-drop-area" class="relative border-2 border-dashed border-blue-500/50 hover:border-blue-400 rounded-xl p-5 text-center cursor-pointer transition-all bg-slate-950/80 flex flex-col items-center justify-center min-h-[220px] group overflow-hidden">
               <input type="file" id="vision-file-input" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+              
+              <!-- 이미지 미리보기 태그 보완 -->
               <img id="vision-preview-img" class="max-h-52 w-auto object-contain rounded-lg shadow-md hidden mb-2" alt="Meal Preview">
               
               <div id="vision-placeholder" class="space-y-3 w-full flex flex-col items-center">
@@ -154,7 +170,6 @@
                   <p class="text-xs font-semibold text-slate-200">사진을 드래그하거나 아래 버튼을 눌러주세요</p>
                   <p class="text-[10px] text-slate-400 mt-0.5">JPG, PNG 형식 지원</p>
                 </div>
-                <!-- 직관적인 업로드 링크 버튼 -->
                 <button type="button" class="mt-1 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg shadow-md transition-all flex items-center gap-1.5 pointer-events-none">
                   <i class="fa-solid fa-file-arrow-up"></i>
                   <span>내 기기에서 이미지 파일 찾기</span>
@@ -263,7 +278,7 @@
             <!-- Empty State -->
             <div id="vision-empty" class="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-500">
               <i class="fa-solid fa-camera-retro text-4xl mb-3 text-slate-700"></i>
-              <p class="text-sm font-medium">좌측에서 식단 샘플을 선택하거나 이미지를 업로드한 후<br>'영양 진단 실행'을 클릭하세요.</p>
+              <p class="text-sm font-medium">좌측에서 예제식단을 선택하거나 이미지를 업로드한 후<br>'영양 진단 실행'을 클릭하세요.</p>
             </div>
 
           </div>
@@ -725,40 +740,39 @@
     let currentSelectedMealBase64 = null;
     let chatHistory = [];
 
-    // Pre-coded Base64 SVG/Canvas Mock Data (60대 한국인 일반식 추가)
     const sampleMeals = {
       korean: {
-        name: "된장찌개 정식 (잡곡밥, 두부, 시금치나물)",
-        base64: createMealDataUrl("된장찌개 & 잡곡밥", "#d97706", "#059669"),
+        name: "한식 정식 (된장찌개, 잡곡밥, 계란말이, 나물)",
+        imagePath: "./images/meal1.jpg",
         calories: 520,
         protein: 24,
         fat: 11,
         risk: "SAFE",
-        riskTitle: "60대 균형 한식 (권장)",
-        riskMsg: "잡곡밥과 두부, 나물류로구성되어 소화가 잘 되며 균형 잡힌 60대 맞춤 식단입니다.",
-        recommendation: "국물 섭취는 나트륨 관리를 위해 약간만 드시고, 두부와 나물을 위주로 골고루 섭취하세요."
+        riskTitle: "균형 잡힌 한식 식단",
+        riskMsg: "단백질과 식이섬유가 균형을 이루며 소화 부담이 적은 상위 권장 식단입니다.",
+        recommendation: "국물 섭취는 나트륨 관리를 위해 약간만 드시고, 두부와 나물 위주로 섭취하세요."
+      },
+      salad: {
+        name: "닭가슴살 아보카도 샐러드",
+        imagePath: "./images/meal2.jpg",
+        calories: 380,
+        protein: 28,
+        fat: 9,
+        risk: "SAFE",
+        riskTitle: "고단백 저지방 식단 (우수)",
+        riskMsg: "목표 단백질(25g)을 충족하며 근손실 방지에 매우 뛰어납니다.",
+        recommendation: "드레싱은 부어서 드시기보다 살짝 찍어 드시면 칼로리와 지방을 더 줄일 수 있습니다."
       },
       burger: {
         name: "더블 치즈버거 & 감자튀김 세트",
-        base64: createMealDataUrl("고지방 버거 세트", "#f43f5e", "#f59e0b"),
+        imagePath: "./images/meal3.jpg",
         calories: 890,
         protein: 22,
         fat: 42,
         risk: "HIGH",
         riskTitle: "고지방 위험 경고 (덤핑 증후군 주의)",
-        riskMsg: "지방 함량(42g)이 30g 기준치를 초과합니다. 극심한 메스꺼움, 구토 및 위경련이 발생할 수 있습니다.",
+        riskMsg: "지방 함량(42g)이 기준치를 대폭 초과합니다. 극심한 메스꺼움, 구토가 유발될 수 있습니다.",
         recommendation: "⚠️ 감자튀김을 제외하고, 버거의 절반(1/2)만 천천히 섭취하는 것을 강력히 권장합니다."
-      },
-      porridge: {
-        name: "부드러운 전복 소고기 죽",
-        base64: createMealDataUrl("영양 전복죽", "#06b6d4", "#8b5cf6"),
-        calories: 310,
-        protein: 16,
-        fat: 5,
-        risk: "MEDIUM",
-        riskTitle: "소화 용이 식단 (단백질 보충 필요)",
-        riskMsg: "위장 자극이 적고 소화가 우수하나, 한 끼 단백질 목표(25g)보다 9g 부족합니다.",
-        recommendation: "속이 편안한 좋은 선택입니다! 부족한 단백질을 채우기 위해 삶은 계란 흰자나 두부를 함께 섭취해보세요."
       }
     };
 
@@ -790,39 +804,21 @@
       }
     }
 
-    function createMealDataUrl(text, color1, color2) {
-      const canvas = document.createElement('canvas');
-      canvas.width = 400;
-      canvas.height = 300;
-      const ctx = canvas.getContext('2d');
-      
-      const gradient = ctx.createLinearGradient(0, 0, 400, 300);
-      gradient.addColorStop(0, color1);
-      gradient.addColorStop(1, color2);
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, 400, 300);
-
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-      ctx.beginPath();
-      ctx.arc(200, 150, 100, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 20px Pretendard, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(text, 200, 155);
-
-      return canvas.toDataURL('image/jpeg');
-    }
-
+    // 수정: 이미지 로딩 및 안내 영역 토글 보완
     function selectSampleMeal(key) {
       const meal = sampleMeals[key];
-      currentSelectedMealBase64 = meal.base64;
+      if (!meal) return;
+      
+      currentSelectedMealBase64 = meal.imagePath;
       
       const imgEl = document.getElementById('vision-preview-img');
-      imgEl.src = meal.base64;
+      const placeholder = document.getElementById('vision-placeholder');
+      
+      imgEl.src = meal.imagePath;
       imgEl.classList.remove('hidden');
-      document.getElementById('vision-placeholder').classList.add('hidden');
+      if (placeholder) {
+        placeholder.classList.add('hidden');
+      }
     }
 
     function handleImageUpload(e) {
@@ -833,9 +829,13 @@
       reader.onload = function(evt) {
         currentSelectedMealBase64 = evt.target.result;
         const imgEl = document.getElementById('vision-preview-img');
+        const placeholder = document.getElementById('vision-placeholder');
+        
         imgEl.src = currentSelectedMealBase64;
         imgEl.classList.remove('hidden');
-        document.getElementById('vision-placeholder').classList.add('hidden');
+        if (placeholder) {
+          placeholder.classList.add('hidden');
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -868,8 +868,26 @@
       statusTag.innerText = "Gemini 분석 중...";
       statusTag.className = "text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-semibold animate-pulse";
 
-      const mimeType = currentSelectedMealBase64.substring(currentSelectedMealBase64.indexOf(":") + 1, currentSelectedMealBase64.indexOf(";"));
-      const base64Data = currentSelectedMealBase64.split(",")[1];
+      let mimeType = "image/jpeg";
+      let base64Data = "";
+
+      if (currentSelectedMealBase64.startsWith("data:")) {
+        mimeType = currentSelectedMealBase64.substring(currentSelectedMealBase64.indexOf(":") + 1, currentSelectedMealBase64.indexOf(";"));
+        base64Data = currentSelectedMealBase64.split(",")[1];
+      } else {
+        try {
+          const imgEl = document.getElementById('vision-preview-img');
+          const canvas = document.createElement('canvas');
+          canvas.width = imgEl.naturalWidth || 400;
+          canvas.height = imgEl.naturalHeight || 300;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(imgEl, 0, 0);
+          const dataUrl = canvas.toDataURL("image/jpeg");
+          base64Data = dataUrl.split(",")[1];
+        } catch(e) {
+          console.warn("Cross-origin image base64 conversion fallback applied.");
+        }
+      }
 
       const prompt = `Analyze this meal image for a GLP-1 (Wegovy/Mounjaro) user. 
 The user claims they consumed ${intakePct}% of this plate.
@@ -896,12 +914,12 @@ Respond strictly in valid JSON format matching this schema:
             role: "user",
             parts: [
               { text: prompt },
-              {
+              ...(base64Data ? [{
                 inlineData: {
-                  mimeType: mimeType || "image/jpeg",
+                  mimeType: mimeType,
                   data: base64Data
                 }
-              }
+              }] : [])
             ]
           }],
           generationConfig: {
@@ -1364,7 +1382,7 @@ Return JSON strictly:
         if (imagePart) {
           document.getElementById('recipe-generated-img').src = `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
         } else {
-          document.getElementById('recipe-generated-img').src = createMealDataUrl(recipe.recipeTitle, "#6366f1", "#a855f7");
+          document.getElementById('recipe-generated-img').src = "/images/meal1.jpg";
         }
 
         document.getElementById('recipe-title').innerText = recipe.recipeTitle;
