@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full bg-slate-950">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Food Care - Gemini Powered GLP-1 Nutrition Service</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Pretendard Font -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+  <style>
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(51, 65, 85, 0.8);
+      border-radius: 4px;
+    }
+    .pulse-subtle {
+      animation: pulseSubtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulseSubtle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+  </style>
+</head>
+<body class="h-full text-slate-100 flex flex-col bg-slate-950 antialiased overflow-x-hidden">
+
+  <!-- Top Navigation Header -->
+  <header class="bg-slate-900/90 border-b border-slate-800 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/20">
+          <i class="fa-solid fa-utensils text-white text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-lg font-bold tracking-tight text-white">AI Food Care</span>
+            <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-full">Gemini LLM Live</span>
+          </div>
+          <p class="text-xs text-slate-400">팀명:윈고비 (WinGovy) / GLP-1 환자 전용 맞춤 식단 관리</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="hidden md:flex space-x-1 bg-slate-950/60 p-1 rounded-xl border border-slate-800 text-sm font-medium">
+        <button onclick="switchTab('vision')" id="tab-vision" class="nav-tab px-4 py-2 rounded-lg text-white bg-blue-600 shadow-md transition-all">
+          <i class="fa-solid fa-camera mr-1.5 text-blue-200"></i> Vision AI 식단 분석
+        </button>
+        <button onclick="switchTab('voice')" id="tab-voice" class="nav-tab px-4 py-2 rounded-lg text-slate-400 hover:text-white transition-all">
+          <i class="fa-solid fa-microphone mr-1.5 text-emerald-400"></i> AI 음성 코칭 & TTS
+        </button>
+        <button onclick="switchTab('warning')" id="tab-warning" class="nav-tab px-4 py-2 rounded-lg text-slate-400 hover:text-white transition-all">
+          <i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-400"></i> 부작용 & 경고 시스템
+        </button>
+        <button onclick="switchTab('recipe')" id="tab-recipe" class="nav-tab px-4 py-2 rounded-lg text-slate-400 hover:text-white transition-all">
+          <i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-purple-400"></i> 맞춤 레시피 생성기
+        </button>
+        <button onclick="switchTab('spec')" id="tab-spec" class="nav-tab px-4 py-2 rounded-lg text-slate-400 hover:text-white transition-all">
+          <i class="fa-solid fa-file-code mr-1.5 text-cyan-400"></i> 기술명세서 (Tech Spec)
+        </button>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <div id="api-status-badge" class="px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          Gemini Ready
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div class="md:hidden flex overflow-x-auto p-2 border-t border-slate-800 bg-slate-900 gap-1 text-xs">
+      <button onclick="switchTab('vision')" id="mob-tab-vision" class="mob-tab whitespace-nowrap px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium">Vision AI</button>
+      <button onclick="switchTab('voice')" id="mob-tab-voice" class="mob-tab whitespace-nowrap px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">음성 코칭</button>
+      <button onclick="switchTab('warning')" id="mob-tab-warning" class="mob-tab whitespace-nowrap px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">부작용 경고</button>
+      <button onclick="switchTab('recipe')" id="mob-tab-recipe" class="mob-tab whitespace-nowrap px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">레시피 생성</button>
+      <button onclick="switchTab('spec')" id="mob-tab-spec" class="mob-tab whitespace-nowrap px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">기술명세서</button>
+    </div>
+  </header>
+
+  <!-- Main Content Body -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col">
+
+    <!-- TAB 1: VISION AI FOOD ANALYSIS -->
+    <section id="sec-vision" class="tab-content space-y-6">
+      <div class="bg-gradient-to-r from-blue-900/40 via-indigo-900/30 to-slate-900 border border-blue-500/20 rounded-2xl p-6 shadow-xl">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <span class="px-2.5 py-1 text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-md">핵심 기능 1: Vision AI</span>
+            <h2 class="text-2xl font-bold text-white mt-2">식전·식후 잔반 이미지 분석 & 영양 역산</h2>
+            <p class="text-sm text-slate-300 mt-1">
+              위고비/마운자로 복용자의 근손실 방지(단백질 25g 이상 확보) 및 고지방 음식(덤핑 증후군 위험)을 Gemini Vision AI가 사진 1장으로 정밀 진단합니다.
+            </p>
+          </div>
+          <div class="flex gap-2 text-xs">
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 text-center">
+              <span class="block text-slate-400">목표 단백질</span>
+              <span class="text-lg font-bold text-blue-400">25 ~ 30g</span>
+            </div>
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 text-center">
+              <span class="block text-slate-400">지방 상한선</span>
+              <span class="text-lg font-bold text-amber-400">&lt; 20~30g</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left: Image Picker & Upload -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-lg">
+            <h3 class="text-sm font-bold text-white mb-3 flex items-center justify-between">
+              <span><i class="fa-solid fa-image text-blue-400 mr-2"></i>식사 이미지 선택 / 업로드</span>
+              <span class="text-xs text-slate-400 font-normal">샘플 사용 또는 직접 등록</span>
+            </h3>
+
+            <!-- Sample Presets: 60대 일반식(된장찌개)으로 변경 -->
+            <div class="grid grid-cols-3 gap-2 mb-4">
+              <button onclick="selectSampleMeal('korean')" class="meal-preset group border border-slate-700 hover:border-blue-500 p-2 rounded-xl text-left bg-slate-950 transition-all">
+                <div class="text-[11px] font-semibold text-slate-300 group-hover:text-blue-400">된장찌개정식 (60대)</div>
+                <div class="text-[10px] text-emerald-400 font-mono">일반 한식</div>
+              </button>
+              <button onclick="selectSampleMeal('burger')" class="meal-preset group border border-slate-700 hover:border-amber-500 p-2 rounded-xl text-left bg-slate-950 transition-all">
+                <div class="text-[11px] font-semibold text-slate-300 group-hover:text-amber-400">치즈 버거 세트</div>
+                <div class="text-[10px] text-rose-400 font-mono">고지방 위험</div>
+              </button>
+              <button onclick="selectSampleMeal('porridge')" class="meal-preset group border border-slate-700 hover:border-indigo-500 p-2 rounded-xl text-left bg-slate-950 transition-all">
+                <div class="text-[11px] font-semibold text-slate-300 group-hover:text-indigo-400">전복죽 / 소프트</div>
+                <div class="text-[10px] text-cyan-400 font-mono">소화 용이</div>
+              </button>
+            </div>
+
+            <!-- Upload Box (직관적인 버튼 강조 디자인으로 개선) -->
+            <div id="image-drop-area" class="relative border-2 border-dashed border-blue-500/50 hover:border-blue-400 rounded-xl p-5 text-center cursor-pointer transition-all bg-slate-950/80 flex flex-col items-center justify-center min-h-[220px] group">
+              <input type="file" id="vision-file-input" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+              <img id="vision-preview-img" class="max-h-52 w-auto object-contain rounded-lg shadow-md hidden mb-2" alt="Meal Preview">
+              
+              <div id="vision-placeholder" class="space-y-3 w-full flex flex-col items-center">
+                <div class="w-12 h-12 rounded-full bg-blue-600/20 border border-blue-500/30 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-xs font-semibold text-slate-200">사진을 드래그하거나 아래 버튼을 눌러주세요</p>
+                  <p class="text-[10px] text-slate-400 mt-0.5">JPG, PNG 형식 지원</p>
+                </div>
+                <!-- 직관적인 업로드 링크 버튼 -->
+                <button type="button" class="mt-1 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg shadow-md transition-all flex items-center gap-1.5 pointer-events-none">
+                  <i class="fa-solid fa-file-arrow-up"></i>
+                  <span>내 기기에서 이미지 파일 찾기</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Intake slider -->
+            <div class="mt-4 space-y-3">
+              <div class="flex justify-between items-center text-xs">
+                <label class="text-slate-300 font-medium">섭취율 (식후 잔반 역산)</label>
+                <span id="intake-val-display" class="font-bold text-blue-400 font-mono">100% (전량 섭취)</span>
+              </div>
+              <input type="range" id="intake-slider" min="10" max="100" value="100" oninput="updateIntakeDisplay(this.value)" class="w-full accent-blue-500 bg-slate-800 h-2 rounded-lg cursor-pointer">
+              <div class="flex justify-between text-[10px] text-slate-500">
+                <span>10% (대부분 남김)</span>
+                <span>50% (절반 섭취)</span>
+                <span>100% (완식)</span>
+              </div>
+            </div>
+
+            <!-- Analyze Button -->
+            <button onclick="runVisionAnalysis()" id="btn-run-vision" class="w-full mt-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-brain"></i> Vision AI 영양 진단 실행
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: AI Analysis Output -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-lg min-h-[420px] flex flex-col">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-chart-pie text-cyan-400"></i> 실시간 분석 결과
+              </h3>
+              <span id="vision-status-tag" class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400">대기 중</span>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="vision-loading" class="hidden flex-1 flex flex-col items-center justify-center p-8 text-center space-y-3">
+              <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <p class="text-sm font-medium text-slate-300">Gemini 3 Flash 모델이 음식을 세분화하고 영양 성분을 분석 중입니다...</p>
+              <p class="text-xs text-slate-500">GLP-1 환자 위험 기준(고지방/단백질 부족) 대조 중</p>
+            </div>
+
+            <!-- Result Display -->
+            <div id="vision-result-container" class="hidden flex-1 space-y-4">
+              <div id="glp1-risk-banner" class="p-4 rounded-xl border flex items-start gap-3">
+                <div id="glp1-risk-icon" class="text-xl mt-0.5"></div>
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2">
+                    <span id="glp1-risk-title" class="font-bold text-sm"></span>
+                    <span id="glp1-risk-badge" class="text-[10px] px-2 py-0.5 rounded font-bold uppercase"></span>
+                  </div>
+                  <p id="glp1-risk-desc" class="text-xs leading-relaxed"></p>
+                </div>
+              </div>
+
+              <!-- Macronutrient Cards Grid -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+                  <span class="text-[11px] text-slate-400 block">감지된 음식</span>
+                  <span id="res-food-name" class="text-xs font-bold text-white block mt-1 truncate">-</span>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+                  <span class="text-[11px] text-slate-400 block">총 칼로리</span>
+                  <span id="res-calories" class="text-sm font-bold text-emerald-400 block mt-1">- kcal</span>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+                  <span class="text-[11px] text-slate-400 block">단백질 섭취량</span>
+                  <span id="res-protein" class="text-sm font-bold text-blue-400 block mt-1">- g</span>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+                  <span class="text-[11px] text-slate-400 block">지방 함량</span>
+                  <span id="res-fat" class="text-sm font-bold text-amber-400 block mt-1">- g</span>
+                </div>
+              </div>
+
+              <!-- Protein Target Progress Bar -->
+              <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                <div class="flex justify-between text-xs font-semibold">
+                  <span class="text-slate-300">한 끼 단백질 목표 달성도 (목표 25g)</span>
+                  <span id="protein-progress-text" class="text-blue-400">0%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                  <div id="protein-progress-bar" class="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-0 transition-all duration-700"></div>
+                </div>
+                <p id="protein-feedback" class="text-[11px] text-slate-400 mt-1"></p>
+              </div>
+
+              <!-- Recommended Clinical Guidance -->
+              <div class="bg-blue-950/30 border border-blue-500/20 p-4 rounded-xl">
+                <h4 class="text-xs font-bold text-blue-300 uppercase tracking-wider mb-1">
+                  <i class="fa-solid fa-user-doctor mr-1"></i> GLP-1 맞춤 식사 행동 가이드
+                </h4>
+                <p id="res-recommendation" class="text-xs text-slate-200 leading-relaxed"></p>
+              </div>
+
+              <div class="pt-2 flex justify-end">
+                <button onclick="correctVisionData()" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 underline">
+                  <i class="fa-solid fa-pen-to-square"></i> 인식 오류 시 수동 직접 수정
+                </button>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="vision-empty" class="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-500">
+              <i class="fa-solid fa-camera-retro text-4xl mb-3 text-slate-700"></i>
+              <p class="text-sm font-medium">좌측에서 식단 샘플을 선택하거나 이미지를 업로드한 후<br>'영양 진단 실행'을 클릭하세요.</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: AI VOICE ASSISTANT & TTS COACHING -->
+    <section id="sec-voice" class="tab-content hidden space-y-6">
+      <div class="bg-gradient-to-r from-emerald-900/40 via-teal-900/30 to-slate-900 border border-emerald-500/20 rounded-2xl p-6 shadow-xl">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <span class="px-2.5 py-1 text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-md">핵심 기능 3: Voice Coaching & Gemini TTS</span>
+            <h2 class="text-2xl font-bold text-white mt-2">대화형 코칭 및 Gemini 음성 합성 (TTS)</h2>
+            <p class="text-sm text-slate-300 mt-1">
+              "주사 맞은 지 2일째인데 속이 더부룩해요"와 같이 자연어로 물어보면, Gemini 3 Flash가 최적의 대처법을 답변하고 <strong class="text-emerald-400">Gemini 2.5 TTS</strong>가 생생한 음성으로 대답해 줍니다.
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400">음성 보이스 Preset:</span>
+            <select id="tts-voice-select" class="bg-slate-900 border border-slate-700 text-xs rounded-lg p-2 text-white font-medium">
+              <option value="Kore">Kore (단정한 어조)</option>
+              <option value="Puck">Puck (밝고 따뜻함)</option>
+              <option value="Zephyr">Zephyr (명확한 가이드)</option>
+              <option value="Aoede">Aoede (부드러운 조언)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-8 space-y-4">
+          <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4 shadow-lg flex flex-col h-[520px]">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                  <i class="fa-solid fa-user-nurse"></i>
+                </div>
+                <div>
+                  <h3 class="text-xs font-bold text-white">GLP-1 AI 전담 건강 코치</h3>
+                  <p class="text-[10px] text-emerald-400">Gemini Flash LLM + TTS Connected</p>
+                </div>
+              </div>
+              <button onclick="clearChat()" class="text-xs text-slate-500 hover:text-slate-300">
+                <i class="fa-solid fa-trash-can"></i> 대화 초기화
+              </button>
+            </div>
+
+            <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 p-2 custom-scrollbar">
+              <div class="flex gap-3">
+                <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 text-xs">
+                  <i class="fa-solid fa-robot"></i>
+                </div>
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-3 max-w-[85%] text-xs text-slate-200 leading-relaxed">
+                  안녕하세요! GLP-1(위고비/마운자로) 복용자분들을 위한 AI 코치입니다. <br>
+                  현재 복용 주차나 메스꺼움, 소화불량 등 겪고 계신 증상을 말씀해 주시면 맞춤형 영양 및 식단 조언을 드립니다.
+                </div>
+              </div>
+            </div>
+
+            <div id="tts-audio-bar" class="hidden bg-emerald-950/60 border border-emerald-500/30 p-2.5 rounded-xl my-2 flex items-center justify-between">
+              <div class="flex items-center gap-2 text-xs text-emerald-300">
+                <i class="fa-solid fa-volume-high animate-bounce text-emerald-400"></i>
+                <span id="tts-status-text">Gemini 2.5 TTS 음성 재생 중...</span>
+              </div>
+              <audio id="tts-audio-player" controls class="h-7 max-w-[200px]"></audio>
+            </div>
+
+            <div class="py-2 flex gap-1.5 overflow-x-auto text-[11px]">
+              <button onclick="sendQuickPrompt('주사 2일차인데 메스꺼움이 심해요. 점심으로 뭘 먹으면 좋을까요?')" class="whitespace-nowrap px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700">
+                🤮 메스꺼움 긴급 식단
+              </button>
+              <button onclick="sendQuickPrompt('오늘 단백질 25g을 챙기려면 간식으로 무엇을 먹어야 하나요?')" class="whitespace-nowrap px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700">
+                🥚 간편 단백질 보충
+              </button>
+              <button onclick="sendQuickPrompt('변비가 생겼는데 수분과 섬유질 섭취 요령을 알려주세요.')" class="whitespace-nowrap px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700">
+                💧 변비 예방 가이드
+              </button>
+            </div>
+
+            <div class="pt-2 flex gap-2 border-t border-slate-800">
+              <input type="text" id="chat-input" onkeydown="if(event.key==='Enter') sendChatMessage()" placeholder="증상이나 식단 질문을 입력하세요..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+              <button onclick="sendChatMessage()" id="btn-send-chat" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1">
+                <span>전송</span> <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 space-y-4">
+          <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-lg space-y-4">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
+              <i class="fa-solid fa-id-card text-emerald-400"></i> 환자 투약 프로필
+            </h3>
+            
+            <div class="space-y-3 text-xs">
+              <div>
+                <label class="text-slate-400 block mb-1">투약 약물</label>
+                <select id="user-medication" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200">
+                  <option value="Wegovy">위고비 (Wegovy - 세마글루티드)</option>
+                  <option value="Mounjaro">마운자로 (Mounjaro - 티르제파타이드)</option>
+                  <option value="Saxenda">삭센다 (Saxenda - 리라글루티드)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="text-slate-400 block mb-1">현재 투약 주차</label>
+                <select id="user-week" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200">
+                  <option value="1~2주차">1~2주차 (초기 적응기 - 0.25mg)</option>
+                  <option value="3~4주차">3~4주차 (증량 준비기 - 0.5mg)</option>
+                  <option value="5주차 이상">5주차 이상 (고용량 유지기 - 1.0mg+)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="text-slate-400 block mb-1">현재 주 호소 증상</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <label class="flex items-center gap-2 bg-slate-950 p-2 rounded border border-slate-800 text-slate-300 cursor-pointer">
+                    <input type="checkbox" id="symp-nausea" value="메스꺼움/오심" class="accent-emerald-500"> 메스꺼움
+                  </label>
+                  <label class="flex items-center gap-2 bg-slate-950 p-2 rounded border border-slate-800 text-slate-300 cursor-pointer">
+                    <input type="checkbox" id="symp-constipation" value="변비" class="accent-emerald-500"> 변비
+                  </label>
+                  <label class="flex items-center gap-2 bg-slate-950 p-2 rounded border border-slate-800 text-slate-300 cursor-pointer">
+                    <input type="checkbox" id="symp-reflux" value="위산역류" class="accent-emerald-500"> 위산역류
+                  </label>
+                  <label class="flex items-center gap-2 bg-slate-950 p-2 rounded border border-slate-800 text-slate-300 cursor-pointer">
+                    <input type="checkbox" id="symp-fatigue" value="피로감" class="accent-emerald-500"> 무기력감
+                  </label>
+                </div>
+              </div>
+
+              <div class="p-3 bg-emerald-950/30 border border-emerald-500/20 rounded-xl text-[11px] text-slate-300">
+                <p class="font-semibold text-emerald-400 mb-1"><i class="fa-solid fa-circle-info"></i> 프로필 연동 효과</p>
+                프로필 설정 값은 AI 코치에게 전달되어, 주사 직후 약물 반응을 고려한 특화 조언을 제공합니다.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: WARNING SYSTEM -->
+    <section id="sec-warning" class="tab-content hidden space-y-6">
+      <div class="bg-gradient-to-r from-amber-900/40 via-orange-900/30 to-slate-900 border border-amber-500/20 rounded-2xl p-6 shadow-xl">
+        <div>
+          <span class="px-2.5 py-1 text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-md">핵심 기능 2: Warning System</span>
+          <h2 class="text-2xl font-bold text-white mt-2">고위험 음식 사전 차단 & 투약 타임라인 알림</h2>
+          <p class="text-sm text-slate-300 mt-1">
+            위장관 배출 지연(Delay Gastric Emptying) 특성을 반영하여, 복용 주차 및 투약 후 경과일수에 맞춘 부작용 예방 매트릭스입니다.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-lg">
+            <i class="fa-solid fa-ban"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">1. 고지방 사전 차단 팝업</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            지방 30g 초과(삼겹살, 튀김류 등) 음식 감지 시 덤핑 증후군 및 심한 구토 위험을 경고하고, 섭취량을 1/2로 줄이도록 유도합니다.
+          </p>
+          <button onclick="testWarningPopup('high-fat')" class="w-full py-2 bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-rose-300 rounded-xl text-xs font-semibold transition-all">
+            고지방 경고 시뮬레이션
+          </button>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-lg">
+            <i class="fa-solid fa-droplet"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">2. 주사 1~3일차 탈수 예방</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            투약 직후 갈증 감각 저하로 인한 탈수/두통 발생율을 차단하기 위해 2시간 간격 전해질/수분 섭취 타임라인 푸시를 발송합니다.
+          </p>
+          <button onclick="testWarningPopup('dehydration')" class="w-full py-2 bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/40 text-cyan-300 rounded-xl text-xs font-semibold transition-all">
+            수분 알림 시뮬레이션
+          </button>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">3. 저혈당 & 조기 만복감 알림</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            식사 시작 10분 후 식사를 천천히 하도록 유도하고, 극단적 식욕 저하 시 최소 혈당 유지 간식을 제안합니다.
+          </p>
+          <button onclick="testWarningPopup('hypo')" class="w-full py-2 bg-amber-600/20 hover:bg-amber-600/30 border border-amber-500/40 text-amber-300 rounded-xl text-xs font-semibold transition-all">
+            조기 만복감 시뮬레이션
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-lg space-y-4">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-stethoscope text-amber-400"></i> AI 기반 증상별 위험도 진단 및 대처법 생성
+        </h3>
+        <p class="text-xs text-slate-400">
+          현재 겪고 있는 소화기 증상과 먹은 음식을 선택하면 AI가 안전 가이드를 생성합니다.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <input type="text" id="warn-input-food" placeholder="최근 먹은 음식 (예: 기름진 파스타)" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+          <select id="warn-input-symptom" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+            <option value="심한 메스꺼움 및 헛구역질">심한 메스꺼움 및 헛구역질</option>
+            <option value="복부 팽만감 및 가스 차임">복부 팽만감 및 가스 차임</option>
+            <option value="명치 통증 및 위산 역류">명치 통증 및 위산 역류</option>
+            <option value="3일 이상 지속되는 변비">3일 이상 지속되는 변비</option>
+          </select>
+          <button onclick="evaluateSymptomWithGemini()" id="btn-eval-symptom" class="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl p-2.5 transition-all">
+            위험도 진단 및 대처법 진단
+          </button>
+        </div>
+
+        <div id="symptom-result-box" class="hidden bg-slate-950 border border-slate-800 p-4 rounded-xl text-xs text-slate-200 leading-relaxed"></div>
+      </div>
+    </section>
+
+    <!-- TAB 4: Gemini Flash Image RECIPE GENERATOR -->
+    <section id="sec-recipe" class="tab-content hidden space-y-6">
+      <div class="bg-gradient-to-r from-purple-900/40 via-indigo-900/30 to-slate-900 border border-purple-500/20 rounded-2xl p-6 shadow-xl">
+        <div>
+          <span class="px-2.5 py-1 text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-md">AI Image & Recipe Synth</span>
+          <h2 class="text-2xl font-bold text-white mt-2">GLP-1 맞춤 소프트 푸드 레시피 & 이미지 생성</h2>
+          <p class="text-sm text-slate-300 mt-1">
+            소화가 잘 되고 단백질이 풍부한 음식 콘셉트를 입력하면, Flash Image 모델이 선명한 요리 이미지와 레시피를 즉시 합성합니다.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <h3 class="text-sm font-bold text-white">레시피 아이디어 입력</h3>
+          
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="text-slate-400 block mb-1">식사 타깃</label>
+              <select id="recipe-target" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+                <option value="소화가 편한 부드러운 고단백 아침">소화가 편한 부드러운 고단백 아침</option>
+                <option value="속이 더부룩할 때 먹는 부드러운 영양죽">속이 더부룩할 때 먹는 부드러운 영양죽</option>
+                <option value="주사 맞은 날 먹는 연두부 계란찜">주사 맞은 날 먹는 연두부 계란찜</option>
+                <option value="근손실 방지용 유청 단백질 셰이크">근손실 방지용 유청 단백질 셰이크</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-slate-400 block mb-1">선호 재료 / 요구사항</label>
+              <input type="text" id="recipe-ingredient" value="계란, 두부, 닭가슴살, 자극적이지 않은 간" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+            </div>
+
+            <button onclick="generateRecipeAndImage()" id="btn-gen-recipe" class="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> 레시피 & 이미지 생성
+            </button>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col min-h-[380px]">
+          <h3 class="text-sm font-bold text-white mb-3 flex items-center justify-between border-b border-slate-800 pb-2">
+            <span><i class="fa-solid fa-utensils text-purple-400 mr-2"></i>생성된 맞춤 레시피</span>
+            <span id="recipe-status" class="text-xs text-slate-500">대기 중</span>
+          </h3>
+
+          <div id="recipe-loader" class="hidden flex-1 flex flex-col items-center justify-center p-8 text-center space-y-3">
+            <div class="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-xs text-slate-300">Gemini 3.1 Flash Image 모델이 요리 이미지 및 상세 영양 레시피를 생성 중입니다...</p>
+          </div>
+
+          <div id="recipe-output" class="hidden flex-1 space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="relative rounded-xl overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center min-h-[200px]">
+                <img id="recipe-generated-img" class="w-full h-auto object-cover" alt="Generated Dish">
+              </div>
+              <div class="space-y-2 text-xs">
+                <h4 id="recipe-title" class="font-bold text-base text-purple-300"></h4>
+                <div class="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 space-y-1">
+                  <div class="flex justify-between"><span>예상 단백질:</span> <strong id="rec-protein" class="text-blue-400"></strong></div>
+                  <div class="flex justify-between"><span>예상 지방:</span> <strong id="rec-fat" class="text-amber-400"></strong></div>
+                  <div class="flex justify-between"><span>소화 용이성:</span> <strong class="text-emerald-400">최상 (Very High)</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-2">
+              <h5 class="font-bold text-slate-200"><i class="fa-solid fa-list-check text-purple-400"></i> 조리 순서 & 팁</h5>
+              <div id="recipe-instructions" class="space-y-1 leading-relaxed"></div>
+            </div>
+          </div>
+
+          <div id="recipe-empty" class="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-500">
+            <i class="fa-solid fa-bowl-food text-4xl mb-3 text-slate-700"></i>
+            <p class="text-xs">원하는 식사 형태를 선택 후 레시피 생성을 클릭하세요.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: TECH SPECIFICATION -->
+    <section id="sec-spec" class="tab-content hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+        <div class="border-b border-slate-800 pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2.5 py-0.5 text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-md">6차시 기술명세서</span>
+              <span class="px-2.5 py-0.5 text-xs font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 rounded-md">팀 윈고비 (WinGovy)</span>
+            </div>
+            <h1 class="text-2xl font-extrabold text-white tracking-tight">
+              [AI Food Care] 서비스 기술명세서
+            </h1>
+          </div>
+          <div class="max-w-xl">
+            <p class="text-xs text-slate-300 leading-relaxed bg-slate-950 border border-slate-800 rounded-lg p-2.5">
+              <strong class="text-blue-400">한 줄 요약:</strong> GLP-1(위고비/마운자로) 사용자의 근손실과 위장관 부작용을 예방하기 위해, 식전·식후 사진 분석과 실시간 AI 알림·대화형 코칭을 제공하는 맞춤형 식단 관리 서비스
+            </p>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <h2 class="text-sm font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-diagram-project text-blue-400"></i> 핵심 기능별 작동 흐름 (Core Technical Flow)
+          </h2>
+
+          <div class="overflow-x-auto rounded-xl border border-slate-800">
+            <table class="w-full text-xs text-left text-slate-300">
+              <thead class="bg-slate-950 text-white font-semibold border-b border-slate-800">
+                <tr>
+                  <th class="p-3 w-1/4">핵심 기능 / 구분</th>
+                  <th class="p-3 w-1/6">1. 입력 데이터</th>
+                  <th class="p-3 w-1/4">2. AI 처리·판단</th>
+                  <th class="p-3 w-1/6">3. 결과·행동</th>
+                  <th class="p-3 w-1/6">4. 사람의 확인</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 bg-slate-900/50">
+                <tr>
+                  <td class="p-3">
+                    <span class="text-[10px] font-bold text-blue-300 bg-blue-900/40 border border-blue-500/30 px-1.5 py-0.5 rounded inline-block mb-1">인식 & 분석</span>
+                    <div class="font-bold text-white">Vision AI (음식 인식 & 영양)</div>
+                    <p class="text-[11px] text-slate-400 mt-0.5">식전·식후 잔반 비교를 통한 실제 섭취량 역산 및 영양 성분 산출</p>
+                  </td>
+                  <td class="p-3 bg-slate-950/40">
+                    • 식전/식후 사진 1Set<br>• 정규 식사 및 간식 이미지
+                  </td>
+                  <td class="p-3 bg-blue-950/20">
+                    • 음식 객체 구분 및 세분화<br>• 식전·식후 이미지 차이 분석 (잔반량 산출)<br>
+                    <span class="text-[10px] text-amber-300 bg-amber-950/50 px-1.5 py-0.5 rounded inline-block mt-1">후보: Gemini Vision Multimodal, Volume Estimation</span>
+                  </td>
+                  <td class="p-3 bg-slate-950/40">
+                    • 실제 섭취량(%) 시각화<br>• 단백질(목표 25~30g) 달성도 및 부족량 보충 안내
+                  </td>
+                  <td class="p-3">
+                    • 인식 오류 발생 시 사용자가 직접 터치/수정
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="p-3">
+                    <span class="text-[10px] font-bold text-amber-300 bg-amber-900/40 border border-amber-500/30 px-1.5 py-0.5 rounded inline-block mb-1">위험 예방</span>
+                    <div class="font-bold text-white">Warning System (위험 알림)</div>
+                    <p class="text-[11px] text-slate-400 mt-0.5">고지방/고탄수 차단 및 복용 주차별 부작용 예방 알림</p>
+                  </td>
+                  <td class="p-3 bg-slate-950/40">
+                    • 음식 성분 데이터<br>• 투약 주기/일차 정보<br>• 사용자 증상(오심, 변비)
+                  </td>
+                  <td class="p-3 bg-blue-950/20">
+                    • 고지방(지방 30g 초과) 음식 감지<br>• 주사 직후(1~3일차) 탈수/저혈당/소화 장애 위험도 예측
+                  </td>
+                  <td class="p-3 bg-slate-950/40">
+                    • 고위험 음식 사전 차단 팝업 (섭취량 1/2 절감 권장)<br>• 투약 타임라인 연동 수분/영양 알림
+                  </td>
+                  <td class="p-3">
+                    • 사용자의 경고 알림 확인 및 식단 선택 실행
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="p-3">
+                    <span class="text-[10px] font-bold text-emerald-300 bg-emerald-900/40 border border-emerald-500/30 px-1.5 py-0.5 rounded inline-block mb-1">소통 & 코칭</span>
+                    <div class="font-bold text-white">Voice Assistant & Coaching</div>
+                    <p class="text-[11px] text-slate-400 mt-0.5">자연어 음성 입력 기반 식단 로깅 및 상태 맞춤 코칭</p>
+                  </td>
+                  <td class="p-3 bg-slate-950/40">
+                    • 자연어 음성 질의<br>• 주차별 소화 상태 및 질의
+                  </td>
+                  <td class="p-3 bg-blue-950/20">
+                    • 음성 데이터 자연어 처리(NLP)<br>• 투약 주차 및 증상 맞춤 식단 추천 판단<br>
+                    <span class="text-[10px] text-amber-300 bg-amber-950/50 px-1.5 py-0.5 rounded inline-block mt-1">적용: Gemini 3 Flash + Gemini 2.5 TTS</span>
+                  </td>
+                  <td class="p-3 bg-slate-950/40">
+                    • 말 한마디로 식단 자동 DB 등록<br>• 소화 용이 식단(죽, 계란찜 등) 즉시 추천 및 음성 브리핑
+                  </td>
+                  <td class="p-3">
+                    • 추천안 확인<br>• (안전 직결 시) 전문가 옵션 검토
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+            <h3 class="text-xs font-bold text-blue-400 flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-blue-400"></span> 필요한 데이터 (Data Requirement)
+            </h3>
+            <ul class="text-[11px] text-slate-300 space-y-1">
+              <li>• 식전/식후 음식 사진(1Set)</li>
+              <li>• 실제 섭취량(%), 투약일/주차, 증상 정보</li>
+              <li>• 수분 섭취량, 영양성분 DB 연동</li>
+            </ul>
+          </div>
+
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+            <h3 class="text-xs font-bold text-cyan-400 flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-cyan-400"></span> 작업환경 및 제약사항 (Environment)
+            </h3>
+            <ul class="text-[11px] text-slate-300 space-y-1">
+              <li>• 모바일 앱 (카메라 및 인터넷 연결)</li>
+              <li>• 식전/식후 실시간 진단 & 사전 팝업 경고</li>
+              <li>• 조명/각도 인식 오차 최소화 알고리즘</li>
+            </ul>
+          </div>
+
+          <div class="bg-amber-950/30 p-4 rounded-xl border border-amber-500/20 space-y-2">
+            <h3 class="text-xs font-bold text-amber-400 flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span> 사람의 개입 & 추가 검토사항
+            </h3>
+            <ul class="text-[11px] text-slate-300 space-y-1">
+              <li>• AI 인식 오류 시 사용자가 직접 수정</li>
+              <li>• Gemini LLM 프롬프트 안전 가드레일 정립</li>
+              <li>• 전문가 검토 서비스 약관 수립</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Warning Simulation Modal -->
+  <div id="modal-warning" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div id="modal-icon-container" class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl mx-auto"></div>
+      <div class="text-center space-y-1">
+        <h3 id="modal-title" class="text-lg font-bold text-white"></h3>
+        <p id="modal-subtitle" class="text-xs text-amber-400 font-medium"></p>
+      </div>
+      <p id="modal-body" class="text-xs text-slate-300 leading-relaxed bg-slate-950 p-3.5 rounded-xl border border-slate-800"></p>
+      <div class="flex gap-2">
+        <button onclick="closeModal()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold">확인 및 닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const apiKey = "AQ.Ab8RN6KEPlxqboQw3iPIzNVTI_COKcffH_LGWGJQYMET3OlnMQ";
+    let currentSelectedMealBase64 = null;
+    let chatHistory = [];
+
+    // Pre-coded Base64 SVG/Canvas Mock Data (60대 한국인 일반식 추가)
+    const sampleMeals = {
+      korean: {
+        name: "된장찌개 정식 (잡곡밥, 두부, 시금치나물)",
+        base64: createMealDataUrl("된장찌개 & 잡곡밥", "#d97706", "#059669"),
+        calories: 520,
+        protein: 24,
+        fat: 11,
+        risk: "SAFE",
+        riskTitle: "60대 균형 한식 (권장)",
+        riskMsg: "잡곡밥과 두부, 나물류로구성되어 소화가 잘 되며 균형 잡힌 60대 맞춤 식단입니다.",
+        recommendation: "국물 섭취는 나트륨 관리를 위해 약간만 드시고, 두부와 나물을 위주로 골고루 섭취하세요."
+      },
+      burger: {
+        name: "더블 치즈버거 & 감자튀김 세트",
+        base64: createMealDataUrl("고지방 버거 세트", "#f43f5e", "#f59e0b"),
+        calories: 890,
+        protein: 22,
+        fat: 42,
+        risk: "HIGH",
+        riskTitle: "고지방 위험 경고 (덤핑 증후군 주의)",
+        riskMsg: "지방 함량(42g)이 30g 기준치를 초과합니다. 극심한 메스꺼움, 구토 및 위경련이 발생할 수 있습니다.",
+        recommendation: "⚠️ 감자튀김을 제외하고, 버거의 절반(1/2)만 천천히 섭취하는 것을 강력히 권장합니다."
+      },
+      porridge: {
+        name: "부드러운 전복 소고기 죽",
+        base64: createMealDataUrl("영양 전복죽", "#06b6d4", "#8b5cf6"),
+        calories: 310,
+        protein: 16,
+        fat: 5,
+        risk: "MEDIUM",
+        riskTitle: "소화 용이 식단 (단백질 보충 필요)",
+        riskMsg: "위장 자극이 적고 소화가 우수하나, 한 끼 단백질 목표(25g)보다 9g 부족합니다.",
+        recommendation: "속이 편안한 좋은 선택입니다! 부족한 단백질을 채우기 위해 삶은 계란 흰자나 두부를 함께 섭취해보세요."
+      }
+    };
+
+    window.onload = function() {
+      selectSampleMeal('korean');
+    };
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-tab').forEach(el => {
+        el.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
+        el.classList.add('text-slate-400');
+      });
+      document.querySelectorAll('.mob-tab').forEach(el => {
+        el.classList.remove('bg-blue-600', 'text-white');
+        el.classList.add('bg-slate-800', 'text-slate-300');
+      });
+
+      document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+      const activeNav = document.getElementById(`tab-${tabId}`);
+      if (activeNav) {
+        activeNav.classList.add('bg-blue-600', 'text-white', 'shadow-md');
+        activeNav.classList.remove('text-slate-400');
+      }
+      const activeMobNav = document.getElementById(`mob-tab-${tabId}`);
+      if (activeMobNav) {
+        activeMobNav.classList.add('bg-blue-600', 'text-white');
+        activeMobNav.classList.remove('bg-slate-800', 'text-slate-300');
+      }
+    }
+
+    function createMealDataUrl(text, color1, color2) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 400;
+      canvas.height = 300;
+      const ctx = canvas.getContext('2d');
+      
+      const gradient = ctx.createLinearGradient(0, 0, 400, 300);
+      gradient.addColorStop(0, color1);
+      gradient.addColorStop(1, color2);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 400, 300);
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.beginPath();
+      ctx.arc(200, 150, 100, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 20px Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(text, 200, 155);
+
+      return canvas.toDataURL('image/jpeg');
+    }
+
+    function selectSampleMeal(key) {
+      const meal = sampleMeals[key];
+      currentSelectedMealBase64 = meal.base64;
+      
+      const imgEl = document.getElementById('vision-preview-img');
+      imgEl.src = meal.base64;
+      imgEl.classList.remove('hidden');
+      document.getElementById('vision-placeholder').classList.add('hidden');
+    }
+
+    function handleImageUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        currentSelectedMealBase64 = evt.target.result;
+        const imgEl = document.getElementById('vision-preview-img');
+        imgEl.src = currentSelectedMealBase64;
+        imgEl.classList.remove('hidden');
+        document.getElementById('vision-placeholder').classList.add('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    document.getElementById('image-drop-area').onclick = function(e) {
+      if (e.target.id !== 'vision-file-input') {
+        document.getElementById('vision-file-input').click();
+      }
+    };
+
+    function updateIntakeDisplay(val) {
+      document.getElementById('intake-val-display').innerText = `${val}% (${val == 100 ? '전량 섭취' : val > 50 ? '대부분 섭취' : '잔반 다량'})`;
+    }
+
+    async function runVisionAnalysis() {
+      if (!currentSelectedMealBase64) {
+        alert("이미지를 먼저 업로드하거나 샘플을 선택해주세요.");
+        return;
+      }
+
+      const intakePct = document.getElementById('intake-slider').value;
+      const loader = document.getElementById('vision-loading');
+      const emptyState = document.getElementById('vision-empty');
+      const resultContainer = document.getElementById('vision-result-container');
+      const statusTag = document.getElementById('vision-status-tag');
+
+      loader.classList.remove('hidden');
+      emptyState.classList.add('hidden');
+      resultContainer.classList.add('hidden');
+      statusTag.innerText = "Gemini 분석 중...";
+      statusTag.className = "text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-semibold animate-pulse";
+
+      const mimeType = currentSelectedMealBase64.substring(currentSelectedMealBase64.indexOf(":") + 1, currentSelectedMealBase64.indexOf(";"));
+      const base64Data = currentSelectedMealBase64.split(",")[1];
+
+      const prompt = `Analyze this meal image for a GLP-1 (Wegovy/Mounjaro) user. 
+The user claims they consumed ${intakePct}% of this plate.
+Provide exact nutritional breakdown and GLP-1 specific medical advice in Korean.
+
+Respond strictly in valid JSON format matching this schema:
+{
+  "foodName": "음식 명칭",
+  "calories": 450,
+  "proteinGrams": 25,
+  "fatGrams": 12,
+  "carbsGrams": 50,
+  "glp1RiskLevel": "LOW" or "MEDIUM" or "HIGH",
+  "glp1WarningTitle": "경고 제목",
+  "glp1WarningMessage": "GLP-1 복용자 관점의 위험 및 영양 분석",
+  "recommendedAction": "식사 행동 및 섭취 가이드"
+}`;
+
+      try {
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+        
+        const payload = {
+          contents: [{
+            role: "user",
+            parts: [
+              { text: prompt },
+              {
+                inlineData: {
+                  mimeType: mimeType || "image/jpeg",
+                  data: base64Data
+                }
+              }
+            ]
+          }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: "OBJECT",
+              properties: {
+                foodName: { type: "STRING" },
+                calories: { type: "NUMBER" },
+                proteinGrams: { type: "NUMBER" },
+                fatGrams: { type: "NUMBER" },
+                carbsGrams: { type: "NUMBER" },
+                glp1RiskLevel: { type: "STRING" },
+                glp1WarningTitle: { type: "STRING" },
+                glp1WarningMessage: { type: "STRING" },
+                recommendedAction: { type: "STRING" }
+              },
+              required: ["foodName", "calories", "proteinGrams", "fatGrams", "glp1RiskLevel", "glp1WarningMessage", "recommendedAction"]
+            }
+          }
+        };
+
+        const res = await fetchWithRetry(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        const parsed = JSON.parse(data.candidates[0].content.parts[0].text);
+
+        const factor = intakePct / 100;
+        const netCalories = Math.round(parsed.calories * factor);
+        const netProtein = Math.round(parsed.proteinGrams * factor);
+        const netFat = Math.round(parsed.fatGrams * factor);
+
+        document.getElementById('res-food-name').innerText = parsed.foodName;
+        document.getElementById('res-calories').innerText = `${netCalories} kcal`;
+        document.getElementById('res-protein').innerText = `${netProtein} g`;
+        document.getElementById('res-fat').innerText = `${netFat} g`;
+
+        const protPct = Math.min(100, Math.round((netProtein / 25) * 100));
+        document.getElementById('protein-progress-bar').style.width = `${protPct}%`;
+        document.getElementById('protein-progress-text').innerText = `${protPct}% (${netProtein}g / 25g)`;
+        
+        if (netProtein >= 25) {
+          document.getElementById('protein-feedback').innerText = "✅ 한 끼 최소 단백질 목표(25g)를 훌륭히 달성했습니다! 근손실 예방에 도움을 줍니다.";
+        } else {
+          document.getElementById('protein-feedback').innerText = `⚠️ 단백질이 ${25 - netProtein}g 부족합니다. 계란이나 두유 간식 보충을 추천합니다.`;
+        }
+
+        const riskBanner = document.getElementById('glp1-risk-banner');
+        const riskIcon = document.getElementById('glp1-risk-icon');
+        const riskTitle = document.getElementById('glp1-risk-title');
+        const riskBadge = document.getElementById('glp1-risk-badge');
+        const riskDesc = document.getElementById('glp1-risk-desc');
+
+        if (parsed.glp1RiskLevel === 'HIGH' || netFat > 25) {
+          riskBanner.className = "p-4 rounded-xl border bg-rose-950/40 border-rose-500/40 text-rose-200";
+          riskIcon.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>`;
+          riskTitle.innerText = parsed.glp1WarningTitle || "고지방 주의 경고";
+          riskBadge.innerText = "HIGH RISK";
+          riskBadge.className = "text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-rose-500/20 text-rose-300 border border-rose-500/30";
+        } else if (parsed.glp1RiskLevel === 'MEDIUM') {
+          riskBanner.className = "p-4 rounded-xl border bg-amber-950/40 border-amber-500/40 text-amber-200";
+          riskIcon.innerHTML = `<i class="fa-solid fa-circle-exclamation text-amber-400"></i>`;
+          riskTitle.innerText = parsed.glp1WarningTitle || "영양 균형 주의";
+          riskBadge.innerText = "MEDIUM RISK";
+          riskBadge.className = "text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30";
+        } else {
+          riskBanner.className = "p-4 rounded-xl border bg-emerald-950/40 border-emerald-500/40 text-emerald-200";
+          riskIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+          riskTitle.innerText = parsed.glp1WarningTitle || "안전한 식단";
+          riskBadge.innerText = "SAFE";
+          riskBadge.className = "text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+        }
+
+        riskDesc.innerText = parsed.glp1WarningMessage;
+        document.getElementById('res-recommendation').innerText = parsed.recommendedAction;
+
+        loader.classList.add('hidden');
+        resultContainer.classList.remove('hidden');
+        statusTag.innerText = "분석 완료";
+        statusTag.className = "text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-semibold";
+
+      } catch (err) {
+        console.error(err);
+        alert("Vision 분석 중 오류가 발생했습니다. 라이브 API 키 연결 상태를 확인해주세요.");
+        loader.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+      }
+    }
+
+    function correctVisionData() {
+      const newProtein = prompt("수정할 단백질 섭취량(g)을 입력하세요:", "25");
+      if (newProtein !== null) {
+        document.getElementById('res-protein').innerText = `${newProtein} g`;
+        const protPct = Math.min(100, Math.round((parseInt(newProtein) / 25) * 100));
+        document.getElementById('protein-progress-bar').style.width = `${protPct}%`;
+        document.getElementById('protein-progress-text').innerText = `${protPct}% (${newProtein}g / 25g)`;
+      }
+    }
+
+    function sendQuickPrompt(promptText) {
+      document.getElementById('chat-input').value = promptText;
+      sendChatMessage();
+    }
+
+    async function sendChatMessage() {
+      const inputEl = document.getElementById('chat-input');
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      inputEl.value = '';
+      appendChatMessage('user', text);
+
+      const med = document.getElementById('user-medication').value;
+      const week = document.getElementById('user-week').value;
+      const symptoms = [];
+      if (document.getElementById('symp-nausea').checked) symptoms.push('메스꺼움');
+      if (document.getElementById('symp-constipation').checked) symptoms.push('변비');
+      if (document.getElementById('symp-reflux').checked) symptoms.push('위산역류');
+      if (document.getElementById('symp-fatigue').checked) symptoms.push('무기력감');
+
+      const systemPrompt = `You are a warm, empathetic clinical nutrition assistant specializing in GLP-1 weight loss medications (Wegovy, Mounjaro, Saxenda).
+The user is currently taking: ${med} (${week}).
+Reported symptoms: ${symptoms.length > 0 ? symptoms.join(', ') : '없음'}.
+Give concise, highly practical nutrition or side-effect mitigation tips in Korean (2-3 sentences max). Maintain a supportive and warm tone.`;
+
+      chatHistory.push({ role: 'user', parts: [{ text: text }] });
+
+      const loadingId = appendChatMessage('ai', '코치가 답변을 생각하고 있습니다...');
+
+      try {
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+        const payload = {
+          contents: chatHistory,
+          systemInstruction: { parts: [{ text: systemPrompt }] }
+        };
+
+        const response = await fetchWithRetry(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        const replyText = data.candidates[0].content.parts[0].text;
+
+        updateChatMessage(loadingId, replyText);
+        chatHistory.push({ role: 'model', parts: [{ text: replyText }] });
+
+        generateGeminiTTS(replyText);
+
+      } catch (err) {
+        console.error(err);
+        updateChatMessage(loadingId, '죄송합니다. 답변 생성 중 오류가 발생했습니다.');
+      }
+    }
+
+    function appendChatMessage(sender, message) {
+      const container = document.getElementById('chat-messages');
+      const id = 'msg-' + Date.now();
+      
+      const div = document.createElement('div');
+      div.id = id;
+      div.className = sender === 'user' ? 'flex justify-end' : 'flex gap-3';
+
+      if (sender === 'user') {
+        div.innerHTML = `
+          <div class="bg-blue-600 rounded-2xl p-3 max-w-[85%] text-xs text-white leading-relaxed shadow-md">
+            ${escapeHtml(message)}
+          </div>
+        `;
+      } else {
+        div.innerHTML = `
+          <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 text-xs">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div class="msg-content bg-slate-800 border border-slate-700 rounded-2xl p-3 max-w-[85%] text-xs text-slate-200 leading-relaxed">
+            ${escapeHtml(message)}
+          </div>
+        `;
+      }
+
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+      return id;
+    }
+
+    function updateChatMessage(msgId, newText) {
+      const msgEl = document.getElementById(msgId);
+      if (msgEl) {
+        const contentDiv = msgEl.querySelector('.msg-content');
+        if (contentDiv) {
+          contentDiv.innerHTML = escapeHtml(newText);
+        }
+      }
+    }
+
+    function clearChat() {
+      chatHistory = [];
+      const container = document.getElementById('chat-messages');
+      container.innerHTML = `
+        <div class="flex gap-3">
+          <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 text-xs">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div class="bg-slate-800 border border-slate-700 rounded-2xl p-3 max-w-[85%] text-xs text-slate-200 leading-relaxed">
+            대화가 초기화되었습니다. 편하게 질문해주세요!
+          </div>
+        </div>
+      `;
+    }
+
+    async function generateGeminiTTS(textToSpeak) {
+      const voiceName = document.getElementById('tts-voice-select').value || 'Kore';
+      const audioBar = document.getElementById('tts-audio-bar');
+      const audioPlayer = document.getElementById('tts-audio-player');
+      const statusText = document.getElementById('tts-status-text');
+
+      audioBar.classList.remove('hidden');
+      statusText.innerText = "Gemini 2.5 TTS 음성 생성 중...";
+
+      try {
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+        
+        const payload = {
+          contents: [{
+            parts: [{ text: `Say warmly and clearly in Korean: ${textToSpeak}` }]
+          }],
+          generationConfig: {
+            responseModalities: ["AUDIO"],
+            speechConfig: {
+              voiceConfig: {
+                prebuiltVoiceConfig: { voiceName: voiceName }
+              }
+            }
+          }
+        };
+
+        const response = await fetchWithRetry(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        const part = result?.candidates?.[0]?.content?.parts?.[0];
+        const audioData = part?.inlineData?.data;
+        const mimeType = part?.inlineData?.mimeType;
+
+        if (audioData && mimeType) {
+          const rateMatch = mimeType.match(/rate=(\d+)/);
+          const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
+
+          const pcm16Array = base64ToInt16Array(audioData);
+          const wavBlob = pcmToWav(pcm16Array, sampleRate);
+          const audioUrl = URL.createObjectURL(wavBlob);
+
+          audioPlayer.src = audioUrl;
+          audioPlayer.play();
+          statusText.innerText = `음성 재생 중 (${voiceName} 보이스)`;
+        } else {
+          statusText.innerText = "음성 데이터를 변환할 수 없습니다.";
+        }
+      } catch (err) {
+        console.error("TTS Error:", err);
+        statusText.innerText = "TTS 음성 생성 오류";
+      }
+    }
+
+    function base64ToInt16Array(base64) {
+      const binaryString = atob(base64);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      return new Int16Array(bytes.buffer);
+    }
+
+    function pcmToWav(pcm16Array, sampleRate) {
+      const buffer = new ArrayBuffer(44 + pcm16Array.length * 2);
+      const view = new DataView(buffer);
+      
+      function writeString(offset, string) {
+        for (let i = 0; i < string.length; i++) {
+          view.setUint8(offset + i, string.charCodeAt(i));
+        }
+      }
+
+      writeString(0, 'RIFF');
+      view.setUint32(4, 36 + pcm16Array.length * 2, true);
+      writeString(8, 'WAVE');
+      writeString(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, 1, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeString(36, 'data');
+      view.setUint32(40, pcm16Array.length * 2, true);
+
+      for (let i = 0; i < pcm16Array.length; i++) {
+        view.setInt16(44 + i * 2, pcm16Array[i], true);
+      }
+
+      return new Blob([view], { type: 'audio/wav' });
+    }
+
+    function testWarningPopup(type) {
+      const modal = document.getElementById('modal-warning');
+      const iconBox = document.getElementById('modal-icon-container');
+      const title = document.getElementById('modal-title');
+      const subtitle = document.getElementById('modal-subtitle');
+      const body = document.getElementById('modal-body');
+
+      if (type === 'high-fat') {
+        iconBox.className = "w-12 h-12 rounded-2xl flex items-center justify-center text-2xl mx-auto bg-rose-500/20 text-rose-400";
+        iconBox.innerHTML = `<i class="fa-solid fa-ban"></i>`;
+        title.innerText = "고지방 음식 사전 차단 경고";
+        subtitle.innerText = "지방 38g 감지됨 (GLP-1 허용치 초과)";
+        body.innerText = "위고비/마운자로 복용 시 고지방 음식을 다량 섭취할 경우 위 배출 지연으로 인해 심한 덤핑 증후군 및 구토가 유발될 수 있습니다. 섭취량을 1/2 이하로 줄이고 음료는 물로 변경하시겠습니까?";
+      } else if (type === 'dehydration') {
+        iconBox.className = "w-12 h-12 rounded-2xl flex items-center justify-center text-2xl mx-auto bg-cyan-500/20 text-cyan-400";
+        iconBox.innerHTML = `<i class="fa-solid fa-droplet"></i>`;
+        title.innerText = "주사 2일차 수분 충전 타이머";
+        subtitle.innerText = "목표 수분 2,000ml / 현재 600ml";
+        body.innerText = "투약 직후에는 뇌의 갈증 신호가 둔화되어 알게 모르게 탈수가 진행될 수 있습니다. 지금 미지근한 물 한 컵(200ml)을 천천히 마셔주세요.";
+      } else {
+        iconBox.className = "w-12 h-12 rounded-2xl flex items-center justify-center text-2xl mx-auto bg-amber-500/20 text-amber-400";
+        iconBox.innerHTML = `<i class="fa-solid fa-hourglass-half"></i>`;
+        title.innerText = "조기 만복감 신호 감지";
+        subtitle.innerText = "식사 시작 10분 경과";
+        body.innerText = "위 운동 저하로 인해 갑자기 숟가락을 놓게 될 수 있습니다. 단백질(고기/계란) 위주로 먼저 드시고 탄수화물은 나중에 섭취해 근손실을 예방하세요.";
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('modal-warning').classList.add('hidden');
+    }
+
+    async function evaluateSymptomWithGemini() {
+      const food = document.getElementById('warn-input-food').value || "일반 식사";
+      const symptom = document.getElementById('warn-input-symptom').value;
+      const resBox = document.getElementById('symptom-result-box');
+      const btn = document.getElementById('btn-eval-symptom');
+
+      btn.innerText = "진단 중...";
+      resBox.classList.remove('hidden');
+      resBox.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-2"></i> Gemini LLM이 응급 대처 가이드를 생성 중입니다...`;
+
+      const prompt = `GLP-1 환자가 "${food}"을(를) 섭취한 후 "${symptom}" 증상을 호소하고 있습니다.
+1. 위험도 등급 (안전/주의/경고)
+2. 발생 원인
+3. 즉각적인 완화 조치 (2~3개 포인트)
+4. 병원 진료가 필요한 응급 레드플래그 신호
+위 사항을 한국어로 친절하고 명확하게 정리해 주세요.`;
+
+      try {
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+        const response = await fetchWithRetry(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+        const data = await response.json();
+        const text = data.candidates[0].content.parts[0].text;
+
+        resBox.innerHTML = `
+          <div class="space-y-2">
+            <div class="font-bold text-amber-400 border-b border-slate-800 pb-1">
+              <i class="fa-solid fa-clipboard-check mr-1"></i> Gemini 임상 가이드라인
+            </div>
+            <div class="whitespace-pre-line text-slate-200">${escapeHtml(text)}</div>
+          </div>
+        `;
+      } catch (err) {
+        console.error(err);
+        resBox.innerText = "진단 결과를 가져올 수 없습니다.";
+      } finally {
+        btn.innerText = "위험도 진단 및 대처법 진단";
+      }
+    }
+
+    async function generateRecipeAndImage() {
+      const target = document.getElementById('recipe-target').value;
+      const ingredient = document.getElementById('recipe-ingredient').value;
+
+      const loader = document.getElementById('recipe-loader');
+      const output = document.getElementById('recipe-output');
+      const empty = document.getElementById('recipe-empty');
+      const status = document.getElementById('recipe-status');
+
+      loader.classList.remove('hidden');
+      output.classList.add('hidden');
+      empty.classList.add('hidden');
+      status.innerText = "Gemini AI 합성 중...";
+
+      try {
+        const textPrompt = `Generate a GLP-1 friendly soft meal recipe for: "${target}". Preferred ingredients: ${ingredient}.
+Return JSON strictly:
+{
+  "recipeTitle": "요리명",
+  "proteinGrams": "25g",
+  "fatGrams": "6g",
+  "instructions": ["1. 조리법...", "2. 조리법...", "3. 조리법..."],
+  "imagePrompt": "A highly detailed studio food photograph of [dish name] served on a clean modern ceramic plate, soft natural lighting, food photography"
+}`;
+
+        const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+        const textRes = await fetchWithRetry(textApiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: textPrompt }] }],
+            generationConfig: {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: "OBJECT",
+                properties: {
+                  recipeTitle: { type: "STRING" },
+                  proteinGrams: { type: "STRING" },
+                  fatGrams: { type: "STRING" },
+                  instructions: { type: "ARRAY", items: { type: "STRING" } },
+                  imagePrompt: { type: "STRING" }
+                },
+                required: ["recipeTitle", "proteinGrams", "fatGrams", "instructions", "imagePrompt"]
+              }
+            }
+          })
+        });
+
+        const textData = await textRes.json();
+        const recipe = JSON.parse(textData.candidates[0].content.parts[0].text);
+
+        const imgApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key=${apiKey}`;
+        const imgPayload = {
+          contents: [{ parts: [{ text: recipe.imagePrompt || target }] }],
+          generationConfig: {
+            responseModalities: ['IMAGE'],
+            imageConfig: { aspectRatio: "1:1" }
+          }
+        };
+
+        const imgRes = await fetchWithRetry(imgApiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(imgPayload)
+        });
+
+        const imgData = await imgRes.json();
+        const imagePart = imgData?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+
+        if (imagePart) {
+          document.getElementById('recipe-generated-img').src = `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
+        } else {
+          document.getElementById('recipe-generated-img').src = createMealDataUrl(recipe.recipeTitle, "#6366f1", "#a855f7");
+        }
+
+        document.getElementById('recipe-title').innerText = recipe.recipeTitle;
+        document.getElementById('rec-protein').innerText = recipe.proteinGrams;
+        document.getElementById('rec-fat').innerText = recipe.fatGrams;
+
+        const instBox = document.getElementById('recipe-instructions');
+        instBox.innerHTML = recipe.instructions.map(item => `<div>• ${escapeHtml(item)}</div>`).join('');
+
+        loader.classList.add('hidden');
+        output.classList.remove('hidden');
+        status.innerText = "생성 완료";
+
+      } catch (err) {
+        console.error(err);
+        alert("레시피 생성 중 오류가 발생하였습니다.");
+        loader.classList.add('hidden');
+        empty.classList.remove('hidden');
+      }
+    }
+
+    async function fetchWithRetry(url, options, retries = 3, delay = 1000) {
+      for (let i = 0; i < retries; i++) {
+        try {
+          const res = await fetch(url, options);
+          if (res.ok) return res;
+        } catch (e) {
+          if (i === retries - 1) throw e;
+        }
+        await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+      }
+      return fetch(url, options);
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+  </script>
+</body>
+</html>
