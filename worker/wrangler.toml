@@ -8,5 +8,5 @@ compatibility_date = "2024-11-01"
 # 선택 사항: 이 Worker를 특정 도메인(예: GitHub Pages 주소)에서만 호출 가능하게 제한하려면
 # 아래 vars에 ALLOWED_ORIGIN을 설정하세요. (설정하지 않으면 모든 origin에서 호출 가능)
 #
-# [vars]
+[vars]
 ALLOWED_ORIGIN = "https://yanickkk.github.io"
