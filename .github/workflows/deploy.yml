@@ -24,8 +24,6 @@ jobs:
       - name: Prepare site files
         run: |
           mkdir -p dist
-          rsync -a --exclude='.git' --exclude='.github' --exclude='dist' --exclude='worker' ./ dist/
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
